@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Courses Familiales</title>
+    <link rel="stylesheet" href="public/css/style.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>🛒 Gestion des Courses Familiales</h1>
+            <p>Suivez vos achats et analysez vos dépenses</p>
+        </header>
+
+        <main>
+            <section class="card">
+                <h2>➕ Ajouter un achat</h2>
+                <form @submit.prevent="addPurchase">
+                    <div class="form-group">
+                        <label for="product">Produit :</label>
+                        <input type="text" id="product" v-model="newPurchase.product" required placeholder="Ex: Lait, Riz, Pommes...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="price">Prix (€) :</label>
+                        <input type="number" id="price" v-model="newPurchase.price" min="0.01" step="0.01" required placeholder="0.00">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="date">Date :</label>
+                        <input type="date" id="date" v-model="newPurchase.date" required>
+                    </div>
+                    
+                    <button type="submit">Enregistrer l'achat</button>
+                    <p v-if="error" class="error">{{ error }}</p>
+                    
+                    <div v-if="isDevelopment" class="test-section">
+                        <h3>🧪 Test Unitaire (scénario demandé)</h3>
+                        <button @click="runUnitTest" class="test-btn">
+                            Tester : getTopProduct(["Pomme","poire","pomme"])
+                        </button>
+                        <div v-if="testResult" class="test-result">
+                            <p><strong>Résultat :</strong> {{ testResult.success ? "✅ RÉUSSI" : "❌ ÉCHEC" }}</p>
+                            <p><strong>Obtenu :</strong> "{{ testResult.result }}"</p>
+                            <p><strong>Attendu :</strong> "{{ testResult.expected }}"</p>
+                            <p><strong>Taux couverture :</strong> {{ testResult.coverage }}%</p>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <section class="card">
+                <h2>📜 Historique des achats</h2>
+                <div v-if="purchases.length === 0" class="empty">
+                    Aucun achat enregistré. Ajoutez votre premier achat !
+                </div>
+                <table v-else>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Produit</th>
+                            <th>Prix (€)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="purchase in sortedPurchases" :key="purchase.id">
+                            <td>{{ formatDate(purchase.date) }}</td>
+                            <td>{{ purchase.product }}</td>
+                            <td>{{ purchase.price.toFixed(2) }} €</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="card">
+                <h2>📈 Statistiques</h2>
+                <div class="stats">
+                    <div class="stat-item">
+                        <h3>💰 Total dépensé</h3>
+                        <p class="big-number">{{ totalSpent.toFixed(2) }} €</p>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <h3>🏆 Produit le plus acheté</h3>
+                        <p v-if="topProduct" class="big-number">
+                            {{ topProduct.name }}<br>
+                            <small>({{ topProduct.count }} fois)</small>
+                        </p>
+                        <p v-else>-</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Application de gestion des courses - Épreuve de génie logiciel</p>
+        </footer>
+    </div>
+
+    <script src="public/js/app.js"></script>
+</body>
+</html>
